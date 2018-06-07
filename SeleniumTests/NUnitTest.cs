@@ -253,10 +253,11 @@ namespace SeleniumTests
         {
             _myDriver.Url = "http://toolsqa.com/automation-practice-form/";
             
-            var seleniumCommands = _myDriver.FindElement(By.Id("selenium_commands"));
+            //Primero buscar el elemento select con mi driver
+            var selectSeleniumCommands = _myDriver.FindElement(By.Id("selenium_commands"));
 
-            //Crear objeto select
-            SelectElement selectElement = new SelectElement(seleniumCommands);
+            //Crear objeto SelectElement
+            SelectElement selectElement = new SelectElement(selectSeleniumCommands);
             
             //Multiple?
             Console.WriteLine("Education select es múltiple? " + selectElement.IsMultiple.ToString());
