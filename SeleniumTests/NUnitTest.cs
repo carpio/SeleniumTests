@@ -175,6 +175,33 @@ namespace SeleniumTests
         }
 
         [Test]
+        public void EjercicioLoginForm()
+        {
+            _myDriver.Url = "https://www.phptravels.net/admin";
+
+            var formulario = _myDriver.FindElement(By.CssSelector("body > div:nth-child(1) > form.form-signin.form-horizontal.wow.fadeIn.animated.animated"));
+
+            var inputsDeFormulario = formulario.FindElements(By.TagName("input"));
+            
+            foreach(var input in inputsDeFormulario)
+            {                
+                if (input.GetProperty("name") == "email")
+                    input.SendKeys("admin@phptravels.com");
+                if (input.GetProperty("name") == "password")
+                    input.SendKeys("demoadmin");
+                if (input.GetProperty("name") == "remember")
+                {
+                    var divAfueraDeInput = _myDriver.FindElement(By.CssSelector("body > div:nth-child(1) > form.form-signin.form-horizontal.wow.fadeIn.animated.animated > div:nth-child(1) > div > div:nth-child(1) > label > div"));
+
+                    divAfueraDeInput.Click();
+                }                
+            }
+
+            var botonLogin = formulario.FindElement(By.TagName("button"));
+            botonLogin.Click();
+        }
+
+        [Test]
         public void EjercicioElementoSelectTest()
         {
             _myDriver.Url = "http://www.tizag.com/phpT/examples/formex.php";
