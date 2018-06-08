@@ -205,21 +205,21 @@ namespace SeleniumTests
         public void EjercicioElementoSelectTest()
         {
             _myDriver.Url = "http://www.tizag.com/phpT/examples/formex.php";
-
-            //Encontrar textbox name
-            //IWebElement query = _myDriver.FindElement(By.Name("Fname"));
-            //Enviar texto
-            //query.SendKeys("John");
-
+            
             var education = _myDriver.FindElement(By.Name("education"));
-
+            
             var favoriteDay = _myDriver.FindElement(By.Name("TofD"));
             
             //Crear objeto select
-            SelectElement selectElementEducation = new SelectElement(education);
+            var selectElementEducation = new SelectElement(education);
             SelectElement selectElementFavoriteDay = new SelectElement(favoriteDay);
 
-            foreach(var option in selectElementEducation.Options)
+            if (selectElementEducation.IsMultiple)
+            {
+                var opciones = selectElementEducation.AllSelectedOptions;
+            }
+
+            foreach (var option in selectElementEducation.Options)
             {
                 Console.WriteLine("Este es el texto de la opción: " + option.Text);
                 Console.WriteLine("Este es el valor de la opción: " + option.GetProperty("value"));
@@ -285,8 +285,9 @@ namespace SeleniumTests
             {
                 //Obtener todos los renglones <tr> de la tabla
                 ReadOnlyCollection<IWebElement> renglones = tabla.FindElements(By.TagName("tr"));
+                
                 //Leer renglones para leer celdas de la tabla con un FOR
-                for(int i=0; i < renglones.Count; i++)
+                for(int i = 0; i < renglones.Count; i++)
                 {
                     //Obtener las celdas del renglón
                     ReadOnlyCollection<IWebElement> celdas = renglones[i].FindElements(By.TagName("td"));
@@ -306,6 +307,39 @@ namespace SeleniumTests
             }
 
             Assert.Fail();
+        }
+
+        [Test]
+        public void TotalDeRenglonesTest()
+        {
+            _myDriver.Url = "http://toolsqa.com/automation-practice-table/";
+
+            var totalBuildingsText = "";
+            //Encontrar la tabla con id content
+            var tabla = _myDriver.FindElement(By.Id("content"));
+            //Obtener TODOS los renglones dentro de la tabla (<tr>s)
+            var coleccionDeRenglones = tabla.FindElements(By.TagName("tr"));
+            var contadorDeRenglones = 0;
+            //Iterar con un FOREAC la colección de renglones
+            foreach(var renglon in coleccionDeRenglones)
+            {
+                var ths = renglon.FindElements(By.TagName("th"));
+                                
+                var renglonConTotal = coleccionDeRenglones[1];
+
+                var unicaCeldaRenglonTotal = renglonConTotal.FindElements(By.TagName("td"));
+
+                totalBuildingsText = unicaCeldaRenglonTotal[0].Text;
+                //Si tiene más de un elemento <th> significa que es el renglón de títulos
+                if (!(ths.Count > 1))
+                {
+                    var celdas = renglon.FindElements(By.TagName("td"));
+                    if (!(celdas[0].Text == "4 buildings"))
+                        contadorDeRenglones++;
+                }
+            }
+
+            Assert.That(contadorDeRenglones.ToString() + " buildings" == totalBuildingsText);
         }
 
         [Test]
