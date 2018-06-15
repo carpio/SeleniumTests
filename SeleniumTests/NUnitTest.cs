@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using OpenQA.Selenium.Support.UI;
 using System.Threading;
 using System.IO;
+using OpenQA.Selenium.Interactions;
 
 namespace SeleniumTests
 {
@@ -402,22 +403,26 @@ namespace SeleniumTests
             alert.Accept();
         }
 
-        [Test]
-        public void WebDriverWait()
-        {
-            _myDriver.Url = "http://toolsqa.wpengine.com/automation-practice-switch-windows/";
+        //[Test]
+        //public void WebDriverWait()
+        //{
+        //    _myDriver.Url = "http://toolsqa.wpengine.com/automation-practice-switch-windows/";
 
-            WebDriverWait wait = new WebDriverWait(_myDriver, TimeSpan.FromMinutes(1));
+        //    WebDriverWait wait = new WebDriverWait(_myDriver, TimeSpan.FromMinutes(1));
 
-            Func<IWebDriver, bool> waitForElement = 
-                new Func<IWebDriver, bool>((IWebDriver Web) =>
-            {
-                Console.WriteLine(Web.FindElement(By.Id("target")).GetAttribute("innerHTML"));
-                return true;
-            });
+        //    var waitForElement = new Func<IWebDriver, bool>(
+        //        (IWebDriver Web) =>
+        //            {
+        //                if (Web.FindElement(By.Id("target")) != null)
+        //                    return true;
+        //                else return false;
+        //                //Console.WriteLine(Web.FindElement(By.Id("target")).GetAttribute("innerHTML"));
+        //                //return true;
+        //            }
+        //    );
 
-            wait.Until(waitForElement);
-        }
+        //    wait.Until(waitForElement);
+        //}
 
         [Test]
         public void WebDriverWait2()
@@ -426,7 +431,7 @@ namespace SeleniumTests
 
             WebDriverWait wait = new WebDriverWait(_myDriver, TimeSpan.FromMinutes(1));
 
-            Func<IWebDriver, IWebElement> waitForElement = 
+            var waitForElement = 
                 new Func<IWebDriver, IWebElement>((IWebDriver Web) =>
             {
                 Console.WriteLine("Waiting for color to change");
@@ -434,6 +439,7 @@ namespace SeleniumTests
                 IWebElement element = Web.FindElement(By.Id("colorVar"));
                 if (element.GetAttribute("style").Contains("red"))
                 {
+                    Console.WriteLine("Found!!!");
                     return element;
                 }
                 return null;
@@ -454,10 +460,13 @@ namespace SeleniumTests
                 new Func<IWebDriver, IWebElement>((IWebDriver web) => {
                 var findElementBuzz = web.FindElement(By.Id("clock"));
 
-                if (findElementBuzz.Text == "Buzz Buzz")
-                    return findElementBuzz;
-                else
-                    return null;
+                    if (findElementBuzz.Text == "Buzz Buzz")
+                    {
+                        Console.WriteLine("Element found!!!");
+                        return findElementBuzz;
+                    }
+                    else
+                        return null;
             });
 
             wait.Until(BuzBuzFunc);
@@ -503,7 +512,7 @@ namespace SeleniumTests
 
             wait.Timeout = TimeSpan.FromMinutes(2);
 
-            wait.PollingInterval = TimeSpan.FromMilliseconds(250);
+            wait.PollingInterval = TimeSpan.FromMilliseconds(500);
 
             Func<IWebElement, bool> waiter = 
                 new Func<IWebElement, bool>((IWebElement ele) =>
@@ -537,7 +546,7 @@ namespace SeleniumTests
 
             //Clic login
             loginButton.Click();
-
+            
             //Extraer el texto y guardarlo en un archivo .txt
             var result = _myDriver.FindElement(By.XPath("//div[@id='case_login']/h3")).Text;
             
@@ -549,11 +558,56 @@ namespace SeleniumTests
             ScreenshotImageFormat.Png);
         }
 
+        [Test]
+        public void HoverOverTest()
+        {
+            //Setup
+            _myDriver.Url = "http://store.demoqa.com";
+
+            var element = _myDriver.FindElement(By.Id("menu-item-33"));
+
+            var listMenu = element.FindElement(By.TagName("ul"));
+
+            var listStyle = listMenu.GetAttribute("style");
+
+            //Act
+
+            var action = new Actions(_myDriver);
+
+            action.MoveToElement(element).Perform();
+            
+            listMenu = element.FindElement(By.TagName("ul"));
+
+            listStyle = listMenu.GetAttribute("style");
+
+            //Assert
+
+            Assert.That(listStyle == "display: block;");
+        }
+
+        [Test]
+        public void ProductCategoryClicTest()
+        {
+            _myDriver.Url = "http://store.demoqa.com";
+
+            var element = _myDriver.FindElement(By.Id("menu-item-33"));
+
+            var action = new Actions(_myDriver);
+
+            action.MoveToElement(element).Perform();
+
+            //var listMenu = element.FindElement(By.TagName("ul"));
+            var option = _myDriver.FindElement(By.Id("menu-item-35"));
+
+            var optionName = option.FindElement(By.TagName("a")).Text;
+            
+        }
+
         [TearDown]
         public void EndTest()
         {
             //_myDriver.Close();
-            _myDriver.Quit();
+            //_myDriver.Quit();
         }
     }
 }
